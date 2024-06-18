@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branches - Library Management System</title>
+    <link rel="stylesheet" href="branches.css">
+</head>
+<body>
+    <header>
+        <h1>Library Management System</h1>
+        <nav>
+            <ul>
+                <li><a href="/books">Books</a></li>
+                <li><a href="/patrons">Patrons</a></li>
+                <li><a href="/branches">Branches</a></li>
+                <li><a href="/loans">Loans</a></li>
+                <li><a href="/genres">Genres</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="content">
+        <h2>Branches</h2>
+        <p>This page allows users to manage library branches.</p>
+
+        <!-- Form to Add a New Branch -->
+        <h3>Add a New Branch</h3>
+        <form action="/branches" method="POST">
+            <label for="branchDescription">Branch Description:</label>
+            <input type="text" id="branchDescription" name="branchDescription" required>
+            <button type="submit">Add Branch</button>
+        </form>
+
+        <!-- Table to Display Branches -->
+        <h3>Branch List</h3>
+        <table class="branch-table">
+            <thead>
+                <tr>
+                    <th>Branch ID</th>
+                    <th>Branch Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% branches.forEach(branch => { %>
+                    <tr>
+                        <td><%= branch.BranchID %></td>
+                        <td><%= branch.BranchDescription %></td>
+                        <td>
+                            <!-- Form to Update Branch -->
+                            <form id="update-form-<%= branch.BranchID %>" action="/branches/<%= branch.BranchID %>" method="POST" onsubmit="return handleFormSubmit(event, '<%= branch.BranchID %>', 'PUT')">
+                                <input type="hidden" name="_method" value="PUT">
+                                <label for="branchDescription">Branch Description:</label>
+                                <input type="text" id="branchDescription" name="branchDescription" value="<%= branch.BranchDescription %>" required>
+                                <button type="submit">Update</button>
+                            </form>
+
+                            <!-- Button to Delete Branch -->
+                            <form id="delete-form-<%= branch.BranchID %>" action="/branches/<%= branch.BranchID %>" method="POST" onsubmit="return handleFormSubmit(event, '<%= branch.BranchID %>', 'DELETE')">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+        <div class="return-btn">
+            <a href="/">Return to Home</a>
+        </div>
+    </section>
+    <footer>
+        <p>&copy; 2024 Library Management System, Ross, Cody, Andrew</p>
+    </footer>
+    <script>
+        async function handleFormSubmit(event, id, method) {
+            event.preventDefault();
+            const form = event.target;
+            const action = form.action;
+
+            const response = await fetch(action, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(new FormData(form))
+            });
+
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                console.error('An error occurred:', await response.text());
+            }
+        }
+    </script>
+</body>
+</html>
